@@ -1,0 +1,14 @@
+CMS p p 14000
+1000 3
+! below follows commands sent to PYGIVE
+MSEL=0
+MSUB(102)=1
+MSUB(123)=1
+MSUB(124)=1
+PMAS(25,1)=300  ! Higgs mass
+CKIN(1)=290
+CKIN(2)=310
+MSTP(61)=0
+MSTP(71)=0
+MSTP(81)=0
+MSTP(111)=0

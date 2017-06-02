@@ -1,0 +1,195 @@
+// LHAPythia6.h is a part of the PYTHIA event generator.
+// Copyright (C) 2017 Torbjorn Sjostrand.
+// PYTHIA is licenced under the GNU GPL version 2, see COPYING for details.
+// Please respect the MCnet Guidelines, see GUIDELINES for details.
+// Author: Philip Ilten, May 2015.
+
+#ifndef Pythia8_LHAPythia6_H
+#define Pythia8_LHAPythia6_H
+
+#include "Pythia8Plugins/LHAFortran.h"
+#include <sys/stat.h>
+#include <unistd.h>
+
+namespace Pythia8 {
+
+//==========================================================================
+
+// Give access to the pythia6 routines
+
+extern "C" {
+
+  // some variables
+  #define ksusy1 1000000
+  #define ksusy2 2000000
+  #define ktechn 3000000
+  #define kexcit 4000000
+  #define kdimen 5000000
+
+  //required int variables
+  int pyk,pychge,pycomp;
+
+  // some common blocks
+
+  extern struct {
+    int mstu[200];
+    double paru[200];
+    int mstj[200];
+    double parj[200];
+  } pydat1_;
+
+  extern struct {
+    int kchg[500][4];
+    double pmas[500][4], parf[2000], vckm[4][4];
+  } pydat2_;
+
+  extern struct {
+    int mdcy[500][3], mdme[8000][2];
+    double brat[8000];
+    int kfdp[8000][5];
+  } pydat3_;
+
+  extern struct {
+    int n[1], npad[1], k[4000][5];
+    double p[4000][5], v[4000][5];
+  } pyjets_;
+
+  extern struct {
+    int msel[1], mselpd[1], msub[500], kfin[2][81];
+    double ckin[200];
+  } pysubs_;
+
+  extern struct {
+    int mstp[200];
+    double parp[200];
+    int msti[200];
+    double pari[200];
+  } pypars_;
+
+  extern struct {
+    int iset[500], kfpr[500][2];
+    double coef[500][20];
+    int icol[40][4][2];
+  } pyint2_;
+
+  extern struct {
+    char proc[501];
+  } pyint6_;
+
+  extern struct {
+    int imss[100];
+    double rmss[100];
+  } pymssm_;
+
+// default data setting
+  void pydata_();  
+
+// internal pythia6 parser
+  void pygive_(char *chin, int len_chin);
+
+// Initialize pythia6
+  void pyinit_(char *frame, int len_frame, char *beam, int len_beam, 
+    char *target, int len_target, double *win);
+
+// Generate an pythia6 event.
+  void pyevnt_();
+  void pyevnw_();
+
+}
+
+//==========================================================================
+
+// A derived class from LHAupFortran which allows pythia6
+// to be directly interfaced with Pythia via a plugin structure. 
+
+class LHAupPythia6 : public LHAupFortran {
+
+public:
+
+  // Constructor.
+  LHAupPythia6(string name);
+
+
+protected:
+
+  // Call pyinit and fill the HEPRUP commonblock.
+  bool fillHepRup();
+
+  // Call pyevnt and fill the HEEUP commonblock.
+  bool fillHepEup();
+
+private:
+
+  int len_frame,len_beam,len_target;
+  char frame[10],beam[10],target[10];
+  double win;
+  int nev,nprt;   // number of events and nprt??
+ 
+};
+
+//--------------------------------------------------------------------------
+
+// Constructor.
+
+LHAupPythia6::LHAupPythia6(string name) {
+
+  string line;
+  char *in;
+  int len_in;
+
+//set default parameters before run starts
+//  pydata_();
+
+// parsing user input using pythia internal parser
+  fstream input(name.c_str(), ios::in);
+  input >> frame >> beam >> target >> win;
+  input >> nev >> nprt;
+  while (getline(input, line, '\n')) {
+	in = &line[0];
+	len_in = strlen(in);
+	pygive_(in,len_in);
+  }
+
+
+}
+
+//------------------------------------------------------------------------
+
+
+// Call pythia6 init and fill the HEPRUP commonblock.
+
+bool LHAupPythia6::fillHepRup() {
+
+  //set user given options from settings map
+  len_frame = strlen(frame);
+  len_beam = strlen(beam);
+  len_target = strlen(target);
+
+  // initialise pythia6
+  pyinit_(frame,len_frame,beam,len_beam,target,len_target,&win);
+  return fillHepEup();
+
+}
+
+//--------------------------------------------------------------------------
+
+//  call pyevnt, and fill the HEPEUP commonblock.
+
+bool LHAupPythia6::fillHepEup() {
+
+  // Generate the event nev times.
+	for(size_t i=0; i<nev ;++i)
+    pyevnt_();
+
+  return true;
+
+
+}
+
+//--------------------------------------------------------------------------
+
+//==========================================================================
+
+} // end namespace Pythia8
+
+#endif // Pythia8_LHAPythia6_H
