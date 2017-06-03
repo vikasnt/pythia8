@@ -81,7 +81,6 @@ private:
   this->win = win;
   
   lhaup = this;
-  cout << "lhaup" << lhaup<<endl;
   pythia->setLHAupPtr(lhaup);
 }
 
