@@ -73,7 +73,7 @@ $(PREFIX_LIB)/libpythia6.so: ../src/pythia-6.4.28.f
 	gfortran $< -shared -fPIC -o $@
 main36: main36.cc $(PREFIX_LIB)/libpythia6.so $(PREFIX_LIB)/libpythia8.a\
 	 $(PREFIX_INCLUDE)/Pythia8Plugins/LHAPythia6.h
-	$(CXX) $< -o $@ $(CXX_COMMON) -lgfortran -lpythia6
+	$(CXX) $< -o $@ $(CXX_COMMON) -lgfortran -lpythia6 -w
 
 # HEPMC2.
 main41 main42 main43 main85 main86 main87 main88 main89: $$@.cc\
