@@ -18,7 +18,7 @@ namespace Pythia8 {
 // Give access to the pythia6 routines
 
 extern "C" {
- 
+
 // internal pythia6 parser
   void pygive_(const char *chin, int len_chin);
 
@@ -31,6 +31,9 @@ extern "C" {
   void pyevnt_();
   void pyevnw_();
 
+// filling HEPEUP and HEPRUP common blocks in pythia6
+  void pyupev_();
+  void pyupin_();
 }
 
 //==========================================================================
@@ -64,7 +67,6 @@ private:
   int nev;   // number of events
   string frameType,idA,idB;
   double win;
-  LHAup *lhaup;
  
 };
 
@@ -80,8 +82,7 @@ private:
   this->idB = idB;
   this->win = win;
   
-  lhaup = this;
-  pythia->setLHAupPtr(lhaup);
+  pythia->setLHAupPtr(this);
 }
 
 //-------------------------------------------------------------------------
@@ -121,9 +122,14 @@ LHAupPythia6::~LHAupPythia6() {
 
 bool LHAupPythia6::fillHepRup() {
 
+  
   // initialise pythia6
   pyinit_(frameType.c_str(), idA.c_str(), idB.c_str(), &win,
 	  frameType.size(), idA.size(), idB.size());
+
+  //fill HEPRUP
+  pyupin_();
+
   return fillHepEup();
 
 }
@@ -135,7 +141,10 @@ bool LHAupPythia6::fillHepRup() {
 bool LHAupPythia6::fillHepEup() {
 
   // Generate the event
-    pyevnt_();
+   pyevnt_();
+
+   //FILL HEPEUP
+   pyupev_();
 
   return true;
 
