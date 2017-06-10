@@ -27,10 +27,7 @@ extern "C" {
 	       const char *target, double *win,
 	       int len_frame, int len_beam, int len_target);
 
-// Generate an pythia6 event.
-  void pyevnt_();
-  void pyevnw_();
-
+// Generate an pythia6 event and
 // filling HEPEUP and HEPRUP common blocks in pythia6
   void pyupev_();
   void pyupin_();
@@ -108,6 +105,7 @@ LHAupPythia6::~LHAupPythia6() {
  void LHAupPythia6::readFile(string file) {
 
    string line;
+
    fstream input(file.c_str(), ios::in);
    while (getline(input, line, '\n')) {
      pygive_(line.c_str(), line.size());
@@ -140,11 +138,9 @@ bool LHAupPythia6::fillHepRup() {
 
 bool LHAupPythia6::fillHepEup() {
 
-  // Generate the event
-   pyevnt_();
-
-   //FILL HEPEUP
-   pyupev_();
+  // Generate the event and
+   //fill HEPEUP
+     pyupev_();
 
   return true;
 
