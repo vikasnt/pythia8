@@ -1,4 +1,4 @@
-		#include "Pythia8/Pythia.h"
+#include "Pythia8/Pythia.h"
 #include "Pythia8Plugins/LHAPythia6.h"
 using namespace Pythia8;
 int main() {
