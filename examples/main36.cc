@@ -36,7 +36,7 @@ int main() {
       gP.rotbst(rotmx);
       rotmx.rot(-gP.theta(),-gP.phi());
       eoP.rotbst(rotmx);
-      rotmx.rot(0,-eoP.phi());cout << "hello" << W2 << " " << old_eoP.theta() << " " << eoP.e() <<endl;
+      rotmx.rot(0,-eoP.phi());
       //angle in radians
       if (W2>3000 && old_eoP.e()>14 && old_eoP.theta()>2.738 && old_eoP.theta() <3.009) {
 
@@ -48,7 +48,6 @@ int main() {
 	            acceptance++;
 		          P.rotbst(rotmx);
 	            eT.fill(P.eta(),P.eT());
-              cout << P.eta() << " " << P.eT()<< endl;
 	          }
 	        }
           } 
