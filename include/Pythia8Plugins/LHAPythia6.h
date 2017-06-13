@@ -31,6 +31,8 @@ extern "C" {
 // filling HEPEUP and HEPRUP common blocks in pythia6
   void pyupev_();
   void pyupin_();
+
+  void pyfram_(int *iframe);
 }
 
 //==========================================================================
@@ -124,9 +126,10 @@ bool LHAupPythia6::fillHepRup() {
   // initialise pythia6
   pyinit_(frameType.c_str(), idA.c_str(), idB.c_str(), &win,
 	  frameType.size(), idA.size(), idB.size());
-
+  int fn =1;
+  pyfram_(&fn);
   //fill HEPRUP
-  pyupin_();
+    pyupin_();
 
   return fillHepEup();
 

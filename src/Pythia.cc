@@ -1135,9 +1135,10 @@ bool Pythia::checkBeams() {
     bool doDIS = settings.flag("WeakBosonExchange:all")
               || settings.flag("WeakBosonExchange:ff2ff(t:gmZ)")
               || settings.flag("WeakBosonExchange:ff2ff(t:W)")
-              || (frameType == 4);
+              || (frameType == 4 ) || (frameType ==5);
     if (doDIS && !beamHasGamma ) return true;
   }
+
 
   // If no case above then failed.
   info.errorMsg("Error in Pythia::init: cannot handle this beam combination");
