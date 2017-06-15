@@ -5,61 +5,90 @@ using namespace Pythia8;
 
 int main() {
   Pythia py8;
-    py8.readString("Beams:frameType = 5");
-  LHAupPythia6 py6(&py8,"3MOM", "p+", "e-", 0.0);  //in 3MOM last variable is dummy
-  py6.readString("P(1,3)=819.999");
-  py6.readString("P(2,3)=-26.700");
-  py6.readString("MSEL=0") ;
-  py6.readString("MSUB(10) = 1");
-  py6.readString("MSTP(21)=2");
-  Hist eT("Et", 26, -1.25, 5.5);
-  int acceptance=0;
-  Vec4 eiP,eoP,old_eoP,pP,gP,pgP;
+  LHAupPythia6 py6(&py8, "3mom", "p+", "e-", 0.0);
+  py6.readString("p(1,1)    = 0");
+  py6.readString("p(1,2)    = 0");
+  py6.readString("p(1,3)    = 819.999");
+  py6.readString("p(2,1)    = 0");
+  py6.readString("p(2,2)    = 0");
+  py6.readString("p(2,3)    = -26.700");
+  py6.readString("msel      = 0") ;
+  py6.readString("msub(10)  = 1");
+  py6.readString("mstp(21)  = 1");
+  //py8.readString("Beams:frameType = 2");
+  //py8.readString("Beams:idA = 2212");
+  //py8.readString("Beams:eA = 820");
+  //py8.readString("Beams:idB = 11");
+  //py8.readString("Beams:eB = 26.7");
+  //py8.readString("WeakBosonExchange:ff2ff(t:gmZ) = on");
+  //py8.readString("WeakZ0:gmZmode = 1");
   py8.init();
-  for (int iEvent = 0; iEvent < 10000; ++iEvent) { 
-    py8.next();
-    int eoindex=0;
-    double W=0.,W2=0.;
-    if (py8.info.x1()>0.001) { 
-      eoindex = py8.event[2].iBotCopyId();
-      eiP = py8.event[2].p();
-      eoP = py8.event[eoindex].p();
-      pP  = py8.event[1].p();
-      gP = eiP - eoP;
-      pgP = pP + gP;
-      W = pgP.mCalc();
-      W2 = pow(W,2); 
-      Vec4 P;
-      old_eoP = eoP;
-      RotBstMatrix rotmx;
-      rotmx.bstback(pgP);
-      gP.rotbst(rotmx);
-      rotmx.rot(-gP.theta(),-gP.phi());
-      eoP.rotbst(rotmx);
-      rotmx.rot(0,-eoP.phi());
-      //angle in radians
-      if (W2>3000 && old_eoP.e()>14 && old_eoP.theta()>2.738 && old_eoP.theta() <3.009) {
 
-        for (int i=0;i<py8.event.size();++i) {
-          if (py8.event[i].id()!=11 && py8.event[i].isFinal()) {
-            P = py8.event[i].p();
-            if (P.theta()>0.0767 && P.theta()<0.261) {
-	          if (P.e()>0.5) {
-	            acceptance++;
-		          P.rotbst(rotmx);
-	            eT.fill(P.eta(),P.eT());
-	          }
-	        }
-          } 
-        }
-      } 
+  // Create the output histogram.
+  Hist hst("eT flow", 26, -1.25, 5.5);
+
+  // Generate 100000 events.
+  int iEvent(0), iAccept(0), iAttempt(0);
+  Event &event = py8.event;
+  while (iEvent < 1e5 && iAttempt < 1e6) {
+    ++iAttempt;
+    if (!py8.next()) continue;
+    ++iEvent;
+    
+    // Skip if x < 1e-3.
+    if (py8.info.x1() < 1e-3) continue;
+
+    // Determine the relevant momentum vectors.
+    int  iLep  = event[2].iBotCopyId();
+    Vec4 hIn   = event[1].p();                     // Incoming proton.
+    Vec4 lIn   = event[2].p();                     // Incoming electron.
+    Vec4 lOut  = event[iLep].p();                  // Outgoing electron.
+    Vec4 gamma = lIn - lOut;                       // Exchanged photon.
+
+    // Calculate W2. Apply cuts to W2 and the outgoing electron.
+    double w2 = (gamma + hIn).m2Calc();
+    if (w2 < 3000) continue;
+    if (lOut.e() < 14) continue;
+    if (lOut.theta() < 157.0*M_PI/180) continue;
+    if (lOut.theta() > 172.5*M_PI/180) continue;
+
+    // Calculate the forward hadronic energy and apply cut.
+    double e = 0;
+    for (int iPrt = 0; iPrt < py8.event.size(); ++iPrt) {
+      Particle *prt = &event[iPrt];
+      if (iPrt == iLep) continue;
+      if (!prt->isFinal()) continue;
+      if (prt->theta() < 4.4*M_PI/180) continue;
+      if (prt->theta() > 15.0*M_PI/180) continue;
+      e += prt->e();
     }
-  }
-  eT = eT/(acceptance*0.2596);
-  cout << eT;
-  eT.table("pythia6.txt");
+    if (e < 0.5) continue;
 
-  // End of run.*/
-  py8.stat();
+    // Determine the rotations/boost for the hadronic CMS.
+    RotBstMatrix hcms;
+    hcms.bstback(gamma + hIn);
+    gamma.rotbst(hcms);
+    hcms.rot(0, -gamma.phi());
+    hcms.rot(-gamma.theta(), 0);
+    lOut.rotbst(hcms);
+    hcms.rot(0, -lOut.phi());
+    hIn.rotbst(hcms);
+
+    // Determine the transverse energy and fill the histogram.
+    for (int iPrt = 0; iPrt < py8.event.size(); ++iPrt) {
+      Particle *prt = &py8.event[iPrt];
+      if (iPrt == iLep) continue;
+      if (!prt->isFinal()) continue;
+      if (prt->theta() < 4.4*M_PI/180) continue;
+      if (prt->theta() > 174.0*M_PI/180) continue;
+      prt->rotbst(hcms);
+      hst.fill(prt->eta(), prt->eT());
+    } ++iAccept;
+  }
+
+  // Scale the histogram (and print).
+  hst /= iAccept*(5.5 + 1.25)/26;
+  cout << hst;
+  hst.table("pythia6.txt");
   return 0;
 }
