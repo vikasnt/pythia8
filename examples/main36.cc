@@ -16,7 +16,7 @@ int main() {
 
   // Constructor for pythia6 plugin class.
   // LHAupPythia6(*PYTHIA8,FRAME,BEAM,TARGET,WIN)
-  // where last argument input are exactly same 
+  // where last 4 arguments are exactly same 
   // as what you would pass to Pythia6 in 
   // PYINIT(FRAME,BEAM,TARGET,WIN) call.
   LHAupPythia6 py6(&py8, "3mom", "p+", "e-", 0.0);
@@ -38,7 +38,7 @@ int main() {
   // You can comment out all py6 statement above and 
   // uncomment py8.readString() calls below to instead 
   // do a standard Pythia8 run. This allows for easy
-  // comparison of the results from Pythia8 and Pythia6.
+  // comparison of results from Pythia8 and Pythia6.
   // Modify options according to details of your run.
   // Look at Pythia8 documentation for more info.
   //py8.readString("Beams:frameType = 2");
