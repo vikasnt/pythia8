@@ -1,3 +1,11 @@
+// main36.cc is a part of the PYTHIA event generator.
+// Copyright (C) 2017 Torbjorn Sjostrand.
+// PYTHIA is licenced under the GNU GPL version 2, see COPYING for details.
+// Please respect the MCnet Guidelines, see GUIDELINES for details.
+
+// This is a simple test program.
+// It illustrates how PYTHIA6 can be interfaced with PYTHIA8.
+
 #include "Pythia8/Pythia.h"
 #include "Pythia8Plugins/LHAPythia6.h"
 
@@ -5,7 +13,18 @@ using namespace Pythia8;
 
 int main() {
   Pythia py8;
+
+  // Constructor for pythia6 plugin class.
+  // LHAupPythia6(*PYTHIA8,FRAME,BEAM,TARGET,WIN)
+  // where last argument input are exactly same 
+  // as what you would pass to Pythia6 in 
+  // PYINIT(FRAME,BEAM,TARGET,WIN) call.
   LHAupPythia6 py6(&py8, "3mom", "p+", "e-", 0.0);
+
+  // Flags to be set for Pythia6. These flags should
+  // be modified by user according to the details of
+  // their run. These flags are directly passed to pythia6
+  // so look at Pythia6 documentation for further info. 
   py6.readString("p(1,1)    = 0");
   py6.readString("p(1,2)    = 0");
   py6.readString("p(1,3)    = 819.999");
@@ -15,6 +34,13 @@ int main() {
   py6.readString("msel      = 0") ;
   py6.readString("msub(10)  = 1");
   py6.readString("mstp(21)  = 1");
+
+  // You can comment out all py6 statement above and 
+  // uncomment py8.readString() calls below to instead 
+  // do a standard Pythia8 run. This allows for easy
+  // comparison of the results from Pythia8 and Pythia6.
+  // Modify options according to details of your run.
+  // Look at Pythia8 documentation for more info.
   //py8.readString("Beams:frameType = 2");
   //py8.readString("Beams:idA = 2212");
   //py8.readString("Beams:eA = 820");
@@ -22,6 +48,13 @@ int main() {
   //py8.readString("Beams:eB = 26.7");
   //py8.readString("WeakBosonExchange:ff2ff(t:gmZ) = on");
   //py8.readString("WeakZ0:gmZmode = 1");
+
+  // Following code will work whether you do a Pythia6 or 
+  // Pythia8 run above. You can freely change anything
+  // below according to your need. You will need to modify almost 
+  // all of the code below according to details of your run 
+  // for the output to make sense. 
+
   py8.init();
 
   // Create the output histogram.
@@ -89,6 +122,9 @@ int main() {
   // Scale the histogram (and print).
   hst /= iAccept*(5.5 + 1.25)/26;
   cout << hst;
-  hst.table("pythia6.txt");
+
+  // Save the histogram to a file.
+  hst.table("histogram.txt");
+
   return 0;
 }
