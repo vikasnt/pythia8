@@ -43,7 +43,7 @@ public:
 private:
   
   // parameters
-    double m1,m2,m1s,m2s;
+    double pid,m1,m2,m1s,m2s;
     double sigma0,rhoms,sigma;
     double rdrs,xga;
     

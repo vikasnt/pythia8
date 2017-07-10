@@ -26,14 +26,16 @@ void Sigma1gammaf2f::initProc() {
     
 void Sigma1gammaf2f::sigmaKin() {
     
-    // Store squareed mass of beam and target particles
-    if(/*dis photon*/) {
-        m1 = beamAPtrIn->m();
-        m2 = beamBPtrIn->m();
+    // Store squared mass of beam and target particles
+    if(/*beam A dis photon*/) {
+        m1  = beamAPtrIn->m();
+        m2  = beamBPtrIn->m();
+        pid = beamBptrIn->id()
     }
-    else {
-        m1 = beamBPtrIn->m();
-        m2 = beamAPtrIn->m();
+    else { /* beam B is dis photon*/
+        m1  = beamBPtrIn->m();
+        m2  = beamAPtrIn->m();
+        pid = beamAptrIn->id();
     }
     m1s = m1*m1;
     m2s = m2*m2;
@@ -45,6 +47,7 @@ void Sigma1gammaf2f::sigmaKin() {
     else if(/* patronic cs*/ == 2 ) sigma0 *= m1s / pow2(m1s + rhoms);
     else
         sigma0 *= m1s / pow2(m1s + rhoms); //   w2ga = sH
+    
     //if both beam particles are photons
     if(beamAPtrIn->isGamma() && beamBPtrIn->isGamma()) {
         rdrs = 4.1e-3 * pow(sH,2.167);
@@ -53,10 +56,7 @@ void Sigma1gammaf2f::sigmaKin() {
     }
     else {
         rdrs = (1.5e-4*pow(sH,2.167))/(pow2(m1s + 0.041*sH)*pow(m1s,0.57));
-        if(/*dis photon*/)
-            xga  = m1s/(sH + m1s - pow2(particleDataPtr->m0(beamBptrIn->id())));
-        else
-            xga  = m1s/(sH + m1s - pow2(particleDataPtr->m0(beamAptrIn->id())));
+            xga  = m1s/(sH + m1s - pow2(particleDataPtr->m0(pid)));
     }
     sigma0 *= exp(-max(1e-10,rdrs));
     if(/* patronic cs*/ == 4 ) sigma0 /= max(1e-2,xga);
