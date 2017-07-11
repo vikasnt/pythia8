@@ -47,9 +47,10 @@ private:
     double sigma0,rhoms,sigma;
     double rdrs,xga;
     
-    
 };
     
+//==================================================================================
     
-    
-}
+}  // end namespace Pythia8
+
+#endif //Pythia8_SigmaDIS_H

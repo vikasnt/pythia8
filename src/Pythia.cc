@@ -1135,6 +1135,7 @@ bool Pythia::checkBeams() {
     bool doDIS = settings.flag("WeakBosonExchange:all")
               || settings.flag("WeakBosonExchange:ff2ff(t:gmZ)")
               || settings.flag("WeakBosonExchange:ff2ff(t:W)")
+              || settings.flag("DIS:gammaf2f")
               || (frameType == 4 ) || (frameType ==5);
     if (doDIS && !beamHasGamma ) return true;
   }

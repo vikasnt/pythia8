@@ -1,5 +1,5 @@
-<chapter name="Program Files"> 
- 
+<chapter name="Program Files">
+    
 <h2>Program Files</h2> 
  
 The code is subdivided into a set of files, mainly by physics 
@@ -292,7 +292,12 @@ fermions.
 <file name="SigmaEW"> 
 contains the cross sections and matrix elements for electroweak 
 processes involving photons, <ei>Z^0</ei>'s and <ei>W^+-</ei>'s. 
-</file> 
+</file>
+
+<file name="SigmaDIS">
+    contains the cross sections and matrix elements for dis
+    processes.
+</file>
  
 <file name="SigmaExtraDim"> 
 contains the cross sections and matrix elements for processes in 
@@ -334,8 +339,8 @@ different matrix elements. Also keeps track of allowed incoming
 parton configurations and their cross sections, including parton 
 densities. In order to keep this file from becoming too big, actual 
 cross sections are found in several separate files of derived classes: 
-<code>SigmaQCD</code>, <code>SigmaEW</code>, <code>SigmaOnia</code>, 
-<code>SigmaHiggs</code>, <code>SigmaSUSY</code>, 
+<code>SigmaQCD</code>, <code>SigmaEW</code>, <code>SigmaDIS</code>,
+<code>SigmaOnia</code>, <code>SigmaHiggs</code>, <code>SigmaSUSY</code>,
 <code>SigmaNewGaugeBosons</code>, <code>SigmaLeftRightSym</code>, 
 <code>SigmaLeptoquark</code>, <code>SigmaCompositeness</code>, 
 <code>SigmaExtraDim</code> and <code>SigmaGeneric</code>. 

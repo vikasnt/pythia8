@@ -3,7 +3,7 @@
 // PYTHIA is licenced under the GNU GPL version 2, see COPYING for details.
 // Please respect the MCnet Guidelines, see GUIDELINES for details.
 
-#include "Pythia/SigmaDIS.h"
+#include "Pythia8/SigmaDIS.h"
 
 namespace Pythia8 {
     
@@ -27,19 +27,19 @@ void Sigma1gammaf2f::initProc() {
 void Sigma1gammaf2f::sigmaKin() {
     
     // Store squared mass of beam and target particles
-    if(/*beam A dis photon*/) {
-        m1  = beamAPtrIn->m();
-        m2  = beamBPtrIn->m();
-        pid = beamBptrIn->id()
+    if(beamAPtr->isGamma()) {
+        m1  = beamAPtr->m();
+        m2  = beamBPtr->m();
+        pid = beamBPtr->id();
     }
-    else { /* beam B is dis photon*/
-        m1  = beamBPtrIn->m();
-        m2  = beamAPtrIn->m();
-        pid = beamAptrIn->id();
+    else { /* beam B is photon*/
+        m1  = beamBPtr->m();
+        m2  = beamAPtr->m();
+        pid = beamAPtr->id();
     }
     m1s = m1*m1;
     m2s = m2*m2;
-    sigma0 = 0.389380 * 4. * pow(M_PI,2) * alpEM ;  // *vint(315)*vint(316) at lowest order is equal to 1
+    sigma0 = 0.389380 * 4. * pow(M_PI,2) * alpEM;  // *vint(315)*vint(316) at lowest order is equal to 1
     rhoms = pow2(particleDataPtr->m0(113));
    
     sigma0 /= (m1s + rhoms);
@@ -52,7 +52,7 @@ void Sigma1gammaf2f::sigmaKin() {
         sigma0 *= m1s / pow2(m1s + rhoms); //   w2ga = sH
     
     //if both beam particles are photons
-    if(beamAPtrIn->isGamma() && beamBPtrIn->isGamma()) {
+    if(beamAPtr->isGamma() && beamBPtr->isGamma()) {
         rdrs = 4.1e-3 * pow(sH,2.167);
         rdrs /= pow2(m1s + (0.15*sH))*pow(m1s,0.75)*((1. + 0.11*m1s*m2s)/(1. + 0.02*pow(m2s)));
         xga  = m1s /( sH + m1s + m2s);

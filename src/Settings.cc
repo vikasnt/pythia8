@@ -108,11 +108,12 @@ bool Settings::init(string startFile, bool append) {
       bool hasMin = (line.find("min=") != string::npos);
       bool hasMax = (line.find("max=") != string::npos);
 
+        
       // Check for occurence of a bool and add to flag map.
       if (tag == "<flag" || tag == "<flagfix") {
-        bool value = boolAttributeValue( line, "default=");
+          bool value = boolAttributeValue( line, "default=");
         addFlag( name, value);
-
+        
       // Check for occurence of an int and add to mode map.
       } else if (tag == "<mode" || tag == "<modeopen"
         || tag == "<modepick" || tag == "<modefix") {
