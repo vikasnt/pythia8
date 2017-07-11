@@ -39,13 +39,16 @@ void Sigma1gammaf2f::sigmaKin() {
     }
     m1s = m1*m1;
     m2s = m2*m2;
-    sigma0 = 0.389380 * 4. * pow(M_PI,2) * alpEM ;  // *vint(315)*vint(316) at lowest order is equal to 1
+    sigma0 = 0.389380 * 4. * pow(M_PI,2) * alpEM ;  // *vint(315)*vint(316) at lowest order is equal to 1
     rhoms = pow2(particleDataPtr->m0(113));
-    
-    if(/* patronic cs*/ == 0 )      sigma0 /= m1s;
-    else if(/* patronic cs*/ == 1 ) sigma0 /= (m1s + rhoms);
-    else if(/* patronic cs*/ == 2 ) sigma0 *= m1s / pow2(m1s + rhoms);
-    else
+   
+    sigma0 /= (m1s + rhoms);
+    // we are only running the case mstp(19)=1 for now here
+    // need to define a flag and then below code will work
+  /*  if( patronic_cross_section_flag == 0 )      sigma0 /= m1s;
+    else if(patronic_cross_section_flag== 1 ) sigma0 /= (m1s + rhoms);
+    else if(patronic_cross_section_flag== 2 ) sigma0 *= m1s / pow2(m1s + rhoms);
+    else {
         sigma0 *= m1s / pow2(m1s + rhoms); //   w2ga = sH
     
     //if both beam particles are photons
@@ -59,9 +62,9 @@ void Sigma1gammaf2f::sigmaKin() {
             xga  = m1s/(sH + m1s - pow2(particleDataPtr->m0(pid)));
     }
     sigma0 *= exp(-max(1e-10,rdrs));
-    if(/* patronic cs*/ == 4 ) sigma0 /= max(1e-2,xga);
-
-
+    if(patronic_cross_section_flag == 4 ) sigma0 /= max(1e-2,xga);
+    }
+*/
  }
 
 // Evaluate sigmahat(sHat).
