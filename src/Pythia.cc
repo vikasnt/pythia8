@@ -545,6 +545,7 @@ bool Pythia::init() {
     pyB       = parm("Beams:pyB");
     pzB       = parm("Beams:pzB");
 
+
    // Initialization with a Les Houches Event File or an LHAup object.
   } else {
     doLHA     = true;
@@ -741,7 +742,7 @@ bool Pythia::init() {
 
   // Check that combinations of settings are allowed; change if not.
   checkSettings();
-
+  
   // Initialize the SM couplings (needed to initialize resonances).
   couplingsPtr->init( settings, &rndm );
 
@@ -1137,9 +1138,8 @@ bool Pythia::checkBeams() {
               || settings.flag("WeakBosonExchange:ff2ff(t:W)")
               || settings.flag("DIS:gammaf2f")
               || (frameType == 4 ) || (frameType ==5);
-    if (doDIS && !beamHasGamma ) return true;
+    if (doDIS ) return true;
   }
-
 
   // If no case above then failed.
   info.errorMsg("Error in Pythia::init: cannot handle this beam combination");

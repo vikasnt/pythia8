@@ -33,11 +33,11 @@ public:
     virtual double sigmaHat();
     
   // Select flavour, colour and anticolour.
-  //  virtual coid setIdColAcol();
+    virtual void setIdColAcol();
     
   // Info on the subprocess.
     virtual string name()           const {return "gamma* f -> f";}
-    virtual int code()              const {return 1000;}
+    virtual int code()              const {return 299;}  //setting equal to max allowd for EW process for now
     virtual string inFlux()         const {return "fgm";}
     
 private:

@@ -39,6 +39,7 @@ void Sigma1gammaf2f::sigmaKin() {
     }
     m1s = m1*m1;
     m2s = m2*m2;
+   // cout << beamAPtr->id()<<" and " <<beamBPtr->id() << endl;
     sigma0 = 0.389380 * 4. * pow(M_PI,2) * alpEM;  // *vint(315)*vint(316) at lowest order is equal to 1
     rhoms = pow2(particleDataPtr->m0(113));
    
@@ -74,10 +75,28 @@ double Sigma1gammaf2f::sigmaHat() {
     double  e1 = couplingsPtr->ef(id1Abs);
     
     sigma = sigma0 * pow2(e1);
-    
+   
     return sigma;
     }
     
+ void Sigma1gammaf2f::setIdColAcol() {
+
+    cout << id1 << " and " << id2 << endl;
+ 	// Construct outgoing flavours.
+ 	if (abs(id2)==22)
+ 	setId( id1, id2, id1);
+ 	else
+ 	setId( id1, id2, id2);
+ 
+ 	// Color flow 
+    if (abs(id2)==22)
+ 	setColAcol(1,0,0,0,1,0);
+    else
+    setColAcol(0,0,1,0,1,0);
+
+	//swap when anti quarks
+	if (id1 < 0 || id2 < 0) swapColAcol();
+ }
 //============================================================================
 
 } // end namespace Pythia8
