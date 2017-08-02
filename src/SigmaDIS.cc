@@ -14,13 +14,6 @@ namespace Pythia8 {
     
 //----------------------------------------------------------------------
     
-// Initialize process.
-void Sigma1gammaf2f::initProc() {
-        
-   // if needed
-    
-}
-    
     
 // Evaluate d(sigmaHat)/d(tHat), part independent of incoming flavour.
     
@@ -39,13 +32,14 @@ void Sigma1gammaf2f::sigmaKin() {
     }
     m1s = m1*m1;
     m2s = m2*m2;
-   // cout << beamAPtr->id()<<" and " <<beamBPtr->id() << endl;
-    sigma0 = 0.389380 * 4. * pow(M_PI,2) * alpEM;  // *vint(315)*vint(316) at lowest order is equal to 1
+
+    sigma0 = 0.389380 * 4. * pow(M_PI,2) * alpEM; 
+    // also *vint(315)*vint(316) which at lowest order is equal to 1, need to add later
     rhoms = pow2(particleDataPtr->m0(113));
    
     sigma0 /= (m1s + rhoms);
     // we are only running the case mstp(19)=1 for now here
-    // need to define a flag and then below code will work
+    // need to define a flag and then below code will also work
   /*  if( patronic_cross_section_flag == 0 )      sigma0 /= m1s;
     else if(patronic_cross_section_flag== 1 ) sigma0 /= (m1s + rhoms);
     else if(patronic_cross_section_flag== 2 ) sigma0 *= m1s / pow2(m1s + rhoms);
@@ -80,19 +74,19 @@ double Sigma1gammaf2f::sigmaHat() {
     }
     
  void Sigma1gammaf2f::setIdColAcol() {
-
-    cout << id1 << " and " << id2 << endl;
+ 
  	// Construct outgoing flavours.
  	if (abs(id2)==22)
  	setId( id1, id2, id1);
  	else
  	setId( id1, id2, id2);
+
  
  	// Color flow 
     if (abs(id2)==22)
- 	setColAcol(1,0,0,0,1,0);
-    else
-    setColAcol(0,0,1,0,1,0);
+ 	setColAcol( 1, 0, 0, 0, 1, 0);
+    if (abs(id2)==11)
+    setColAcol( 0, 0, 0, 0, 0, 0);
 
 	//swap when anti quarks
 	if (id1 < 0 || id2 < 0) swapColAcol();

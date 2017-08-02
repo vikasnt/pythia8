@@ -24,7 +24,9 @@ public:
     Sigma1gammaf2f() {}
     
   // Initialize process.
-    virtual void initProc();
+
+   //not needed as of now, should remove later 
+  //virtual void initProc();
     
   // Calculate flavour-independent parts of cross section.
     virtual void sigmaKin();
@@ -37,7 +39,8 @@ public:
     
   // Info on the subprocess.
     virtual string name()           const {return "gamma* f -> f";}
-    virtual int code()              const {return 299;}  //setting equal to max allowd for EW process for now
+    //keeping code equal to max allowd for EW process for now
+    virtual int code()              const {return 299;}  
     virtual string inFlux()         const {return "fgm";}
     
 private:

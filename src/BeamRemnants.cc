@@ -70,6 +70,9 @@ bool BeamRemnants::init( Info* infoPtrIn, Settings& settings, Rndm* rndmPtrIn,
   // Do multiparton interactions.
   doMPI               = settings.flag("PartonLevel:MPI");
 
+  // check if DIS:gammaf2f
+  isgf2f  = settings.flag("DIS:gammaf2f");
+
   // Check that remnant model and colour reconnection model work together.
   if (remnantMode == 1 && reconnectMode == 0) {
     infoPtr->errorMsg("Abort from BeamRemnants::init: The remnant model"
@@ -132,6 +135,7 @@ bool BeamRemnants::add( Event& event, int iFirst, bool doDiffCR) {
   BeamParticle beamAsave = (*beamAPtr);
   BeamParticle beamBsave = (*beamBPtr);
   PartonSystems partonSystemsSave = (*partonSystemsPtr);
+
 
   // Two different methods to add the beam remnants.
   if (remnantMode == 0) {
@@ -204,6 +208,7 @@ bool BeamRemnants::addOld( Event& event) {
   // Save current modifiable colour configuration for fast restoration.
   vector<int> colSave;
   vector<int> acolSave;
+
   for (int i = oldSize; i < event.size(); ++i) {
     colSave.push_back( event[i].col() );
     acolSave.push_back( event[i].acol() );
@@ -226,9 +231,8 @@ bool BeamRemnants::addOld( Event& event) {
       physical = false;
     if (!beamBPtr->remnantColours(event, colFrom, colTo))
       physical = false;
-
     // Then check that colours and anticolours are matched in whole event.
-    if ( physical && !checkColours(event) ) physical = false;
+    if ( physical && !checkColours(event) ) physical = false; 
 
     // If no problems then done, else restore and loop.
     if (physical) break;
@@ -339,6 +343,7 @@ bool BeamRemnants::addNew( Event& event) {
 
 bool BeamRemnants::setKinematics( Event& event) {
 
+
   // References to beams to simplify indexing.
   BeamParticle& beamA = *beamAPtr;
   BeamParticle& beamB = *beamBPtr;
@@ -386,6 +391,7 @@ bool BeamRemnants::setKinematics( Event& event) {
     gammaOneResolved = true;
 
   // Special kinematics setup for one-remnant systems (DIS).
+  // and for DIS:gammaf2f 
   if( (gammaOneResolved && infoPtr->nMPI() == 1) || isDIS )
     return setOneRemnKinematics(event, iDS);
 
@@ -888,7 +894,8 @@ bool BeamRemnants::setKinematics( Event& event) {
     beamB[iRem].iPos( iNew);
   }
 
-  // Done.
+  // Done. 
+
   return true;
 
 }
@@ -896,8 +903,9 @@ bool BeamRemnants::setKinematics( Event& event) {
 //--------------------------------------------------------------------------
 
 // Special beam remnant kinematics for gamma-gamma collision with one
-// remnant system, other created by ISR, and for Deeply Inelastic Scattering.
-// Currently assumes unresolved lepton.
+// remnant system, other created by ISR, and for Deeply Inelastic Scattering,
+// gammaf2f done here as well
+// Currently assumes unresolved lepton. 
 
 bool BeamRemnants::setOneRemnKinematics( Event& event, int beamOffset) {
 
@@ -905,6 +913,12 @@ bool BeamRemnants::setOneRemnKinematics( Event& event, int beamOffset) {
   int iBeamHad;
   if (isDIS) iBeamHad = beamAPtr->isLepton() ? 2 : 1;
   else iBeamHad = beamAPtr->resolvedGamma() ? 1 : 2;
+
+  // Identify lepton beam (needed for filling electron in case of gammaf2f).
+  int iBeamLep;
+  if ( iBeamHad == 1 ) iBeamLep=2;
+  else iBeamLep = 1;
+
   BeamParticle& beamHad   = (iBeamHad == 1) ? *beamAPtr : *beamBPtr;
   BeamParticle& beamOther = (iBeamHad == 2) ? *beamAPtr : *beamBPtr;
 
@@ -914,14 +928,32 @@ bool BeamRemnants::setOneRemnKinematics( Event& event, int beamOffset) {
 
   // Identify remnant-side hadronic four-momentum and scattered lepton if DIS.
   int iLepScat = isDIS ? (beamOther[0].iPos() + 2) : -1;
+  Vec4 outLep;
+
+   // for gammaf2f, we also need to add outgoing electron entry here,
+   // since not added in hard process.
+
+  if ( isgf2f ) {
+    int gamPos = event[2].daughter1();
+    outLep = event[2].p() - event[gamPos].p();
+    int ilep = event.append(beamOther[1].id(), 63, iBeamLep + beamOffset,
+      0, 0, 0, beamOther[1].col(), beamOther[1].acol(), outLep, sqrt(outLep.m2Calc()));
+    beamOther[1].iPos( ilep);
+
+    //scattered lepton position need to be updated for gammaf2f
+    iLepScat = beamOther[1].iPos();
+  }
+
   Vec4 pHadScat;
   for (int i = 5 + beamOffset; i < event.size(); ++i)
     if (event[i].isFinal() && i != iLepScat) pHadScat += event[i].p();
 
+  
   // Set scattered lepton momentum if DIS and find the hadronic system.
   Vec4 pLepScat = isDIS ? event[iLepScat].p() : Vec4();
   Vec4 pHadTot  = event[iBeamA].p() + event[iBeamB].p();
-  if ( isDIS ) pHadTot -= pLepScat;
+  if ( isDIS  && !isgf2f ) pHadTot -= pLepScat;
+  if ( isgf2f ) pHadTot -= outLep;
   Vec4 pRemnant = pHadTot - pHadScat;
   double w2Tot  = pHadTot.m2Calc();
   double w2Scat = pHadScat.m2Calc();
@@ -1095,10 +1127,11 @@ bool BeamRemnants::setOneRemnKinematics( Event& event, int beamOffset) {
       event[iNew].rotbst( MforScat);
   }
 
+
   // Calculate kinematics of remnants and insert into event record.
   double eNewRemn = 0.5 * (w2Tot + w2Remn - w2Scat) / sqrt(w2Tot);
   double wNewRemn = eNewRemn + pzNew;
-  for (int iRem = 1; iRem < beamHad.size(); ++iRem) {
+  for (int iRem = 1; iRem < beamHad.size(); ++iRem) { 
     double wNegNow = wNewRemn * beamHad[iRem].x() / xSum;
     double wPosNow = beamHad[iRem].mT2() / wNegNow;
     beamHad[iRem].pz(-0.5 * (wNegNow - wPosNow));
