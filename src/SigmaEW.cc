@@ -56,7 +56,7 @@ void Sigma2qg2qgamma::setIdColAcol() {
   // Colour flow topology. Swap if first is gluon, or when antiquark.
   setColAcol( 1, 0, 2, 1, 2, 0, 0, 0);
   if (id1 == 21) swapCol12();
-
+  if (id1 < 0 || id2 < 0) swapColAcol();
 }
 
 //==========================================================================
