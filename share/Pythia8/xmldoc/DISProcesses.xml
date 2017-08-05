@@ -1,6 +1,6 @@
 <chapter name="DIS Processes">
 <flag name="DIS:gammaf2f" default="off"> 
 Deep Inelastic Scattering <ei>gamma* f &rarr; f</ei>. 
-Code XYZ.
+Code 299.
 </flag>
 </chapter>

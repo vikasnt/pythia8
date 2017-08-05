@@ -11,6 +11,7 @@
 // Internal headers for special processes.
 #include "Pythia8/SigmaCompositeness.h"
 #include "Pythia8/SigmaEW.h"
+#include "Pythia8/SigmaDIS.h"
 #include "Pythia8/SigmaExtraDim.h"
 #include "Pythia8/SigmaGeneric.h"
 #include "Pythia8/SigmaHiggs.h"
@@ -255,6 +256,7 @@ bool ProcessContainer::trialProcess() {
             else break;
           }
         }
+
       }
     }
 
@@ -1449,6 +1451,11 @@ bool SetupContainers::init(vector<ProcessContainer*>& containerPtrs,
     containerPtrs.push_back( new ProcessContainer(sigmaPtr) );
   }
 
+  // Set up requested object for DIS process.
+  if (settings.flag("DIS:gammaf2f")) {
+    sigmaPtr = new Sigma1gammaf2f;
+    containerPtrs.push_back( new ProcessContainer(sigmaPtr) );
+  }
   // Set up requested objects for photon collision processes.
   bool photonCollisions = settings.flag("PhotonCollision:all");
   if (photonCollisions || settings.flag("PhotonCollision:gmgm2qqbar")) {
@@ -1492,6 +1499,10 @@ bool SetupContainers::init(vector<ProcessContainer*>& containerPtrs,
   }
   if (photonParton || settings.flag("PhotonParton:qgm2qg")) {
     sigmaPtr = new Sigma2qgm2qg();
+    containerPtrs.push_back( new ProcessContainer(sigmaPtr) );
+  }
+  if (photonParton || settings.flag("PhotonParton:qgm2qgm")) {
+    sigmaPtr = new Sigma2qgm2qgm();
     containerPtrs.push_back( new ProcessContainer(sigmaPtr) );
   }
 

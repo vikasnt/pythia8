@@ -1214,6 +1214,37 @@ private:
 
 //==========================================================================
 
+// A derived class for q gamma -> q gamma.
+
+class Sigma2qgm2qgm : public Sigma2Process {
+
+public:
+
+  // Constructor.
+  Sigma2qgm2qgm() {};
+
+// Calculate flavour-independent parts of cross section.
+  virtual void sigmaKin();
+
+  // Evaluate d(sigmaHat)/d(tHat).
+  virtual double sigmaHat();
+
+  // Select flavour, colour and anticolour.
+  virtual void setIdColAcol();
+
+  // Info on the subprocess.
+  virtual string name()   const {return "q gamma -> q gamma";}
+  virtual int    code()   const {return 298;}  //change later to something else
+  virtual string inFlux() const {return "qgm";}
+
+private:
+
+// Values stored for later use.
+  double sigUS, sigma0;
+};
+
+//==========================================================================
+
 } // end namespace Pythia8
 
 #endif // Pythia8_SigmaEW_H

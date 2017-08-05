@@ -324,7 +324,10 @@ Code 273.
 Scattering <ei>q gamma &rarr; q g</ei>. 
 Code 274. 
 </flag> 
- 
+
+<flag name="PhotonParton:qgm2qgm" default="off">
+Scattering <ei>q gamma &rarr; q gamma</ei>.
+Code 298.
 </chapter> 
  
 <!-- Copyright (C) 2017 Torbjorn Sjostrand --> 

@@ -55,8 +55,7 @@ void Sigma2qg2qgamma::setIdColAcol() {
 
   // Colour flow topology. Swap if first is gluon, or when antiquark.
   setColAcol( 1, 0, 2, 1, 2, 0, 0, 0);
-  if (id1 == 21) swapCol1234();
-  if (id1 < 0 || id2 < 0) swapColAcol();
+  if (id1 == 21) swapCol12();
 
 }
 
@@ -2076,6 +2075,7 @@ void Sigma2ffbar2ZW::setIdColAcol() {
 
 //--------------------------------------------------------------------------
 
+    
 // Evaluate weight for Z0 and W+- decay angles.
 
 double Sigma2ffbar2ZW::weightDecay( Event& process, int iResBeg, int iResEnd) {
@@ -3257,6 +3257,55 @@ void Sigma2qgm2qg::setIdColAcol() {
 
   // Colour flow topology. Swap if first is gamma, or when antiquark.
   setColAcol( 1, 0, 0, 0, 2, 0, 1, 2);
+  if (id1 == 22) swapCol1234();
+  if (id1 < 0 || id2 < 0) swapColAcol();
+
+}
+
+//==========================================================================
+
+
+// Sigma2qgm2qgm class.
+// Cross section for q gamma -> q gamma.
+
+//--------------------------------------------------------------------------
+
+// Evaluate d(sigmaHat)/d(tHat), part independent of incoming flavour.
+
+void Sigma2qgm2qgm::sigmaKin() {
+
+  // Calculate kinematics dependence.
+  sigUS  = (8./3.) * (sH2 + uH2) / (-sH * uH);
+
+  // Answer.
+  sigma0 =  (M_PI/sH2) * alpS * alpEM * sigUS;
+
+}
+
+//--------------------------------------------------------------------------
+
+// Evaluate d(sigmaHat)/d(tHat), including incoming flavour dependence.
+
+double Sigma2qgm2qgm::sigmaHat() {
+
+  // Incoming flavour gives charge factor.
+  int idNow    = (id2 == 22) ? id1 : id2;
+  double eNow  = couplingsPtr->ef( abs(idNow) );
+  return sigma0 * pow2(eNow);
+
+}
+
+//--------------------------------------------------------------------------
+
+// Select identity, colour and anticolour.
+
+void Sigma2qgm2qgm::setIdColAcol() {
+
+  // Construct outgoing flavours, trivial.
+  setId( id1, id2, id1, id2);
+
+  // Colour flow topology. Swap if first is gamma, or when antiquark.
+  setColAcol( 1, 0, 0, 0, 1, 0, 0, 0);
   if (id1 == 22) swapCol1234();
   if (id1 < 0 || id2 < 0) swapColAcol();
 

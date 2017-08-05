@@ -34,7 +34,7 @@ void Sigma1gammaf2f::sigmaKin() {
     m2s = m2*m2;
 
     sigma0 = 0.389380 * 4. * pow(M_PI,2) * alpEM; 
-    // also *vint(315)*vint(316) which at lowest order is equal to 1, need to add later
+    // also *vint(315)*vint(316) which at lowest order is equal to 1 (mstp(17)=1), need to add later
     rhoms = pow2(particleDataPtr->m0(113));
    
     sigma0 /= (m1s + rhoms);

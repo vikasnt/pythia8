@@ -14,7 +14,7 @@ namespace Pythia8 {
     
 //=============================================================================
     
-// A derived class for gamma* f -> f  ( f is lepton ).
+// A derived class for gamma* f -> f.
     
 class Sigma1gammaf2f : public Sigma1Process {
 
