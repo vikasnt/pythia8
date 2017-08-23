@@ -54,14 +54,14 @@ int main()
   
   string line="MSEL=2";
   pygive_(line.c_str(), line.size());
-  //line="MSUB(10)=1";
-  //pygive_(line.c_str(), line.size());
-  line="MSTP(17)=1";
+//   line="MSUB(10)=1";
+//  pygive_(line.c_str(), line.size());
+/*  line="MSTP(17)=1";
   pygive_(line.c_str(), line.size());
   line="MSTP(19)=1";
   pygive_(line.c_str(), line.size());
   
-
+*/
   string frame="3MOM";
   string beama="p";
   string beamb="gamma/e-";
@@ -75,19 +75,18 @@ int main()
   // Generate events.
   int iEvent(0),iAccept(0),one(1),iprint(0);
   int dis=0;
-  while (iEvent < 3500) { 
+  while (iEvent < 35000) { 
     pyevnt_();
-    if(pypars_.msti[0]!=99) continue;
-
+   if(pypars_.msti[0]<100) continue;
+//    cout << iEvent << "\t";
     //Print few events.
-    if(iEvent<10)
-    pylist_(&one);
+//    pylist_(&one);
     ++iEvent;++iprint;
     if(iprint==1000) {
       iprint=0;
      cout << "event: "<< iEvent << endl;
    }
-
+//   cout << pypars_.pari[32] << endl;
     // Skip if x < 1e-3.
     if (pypars_.pari[32] < 1e-3) continue;
 
@@ -98,7 +97,7 @@ int main()
         iLep = i;
         break;
       }
-
+//      cout << iLep << endl;
     // Determine the relevant momentum vectors.
       Vec4 hIn,lIn,lOut,gamma;
 
@@ -109,20 +108,23 @@ int main()
       }                               
       gamma = lIn - lOut;           // Exchanged photon.
 
-    // Calculate W2. Apply cuts to W2 and the outgoing electron.
+    
+  // Calculate W2. Apply cuts to W2 and the outgoing electron.
 
     double w2 = (gamma + hIn).m2Calc();
+  //  cout << w2 << endl;
     if (w2 < 3000) continue;
     if (lOut.e() < 14) continue;
     if (lOut.theta() < 157.0*M_PI/180) continue;
     if (lOut.theta() > 172.5*M_PI/180) continue;
 
+    
     // Calculate the forward hadronic energy and apply cut.
     double e = 0;
     Vec4 iparticle;
     for (int iPrt = 0; iPrt < pyjets_.n[0]; ++iPrt) {
       if (iPrt == iLep) continue;
-      if (pyjets_.k[0][iPrt]>10 && pyjets_.k[0][iPrt] <1  ) continue;
+      if (pyjets_.k[0][iPrt]>10 || pyjets_.k[0][iPrt] <1  ) continue;
       iparticle[1]=pyjets_.p[0][iPrt];
       iparticle[2]=pyjets_.p[1][iPrt];
       iparticle[3]=pyjets_.p[2][iPrt];
@@ -131,7 +133,7 @@ int main()
       if (iparticle.theta() > 15.0*M_PI/180) continue;
       e += iparticle.e();
     }
-
+//    cout << e << endl;
     if (e < 0.5) continue;
 
     // Determine the rotations/boost for the hadronic CMS.
@@ -147,13 +149,13 @@ int main()
     // Determine the transverse energy and fill the histogram.
     for (int iPrt = 0; iPrt < pyjets_.n[0]; ++iPrt) {
       if (iPrt == iLep) continue;
-      if (pyjets_.k[0][iPrt]>10 && pyjets_.k[0][iPrt] <1 ) continue;
+      if (pyjets_.k[0][iPrt]>10 || pyjets_.k[0][iPrt] <1 ) continue;
       iparticle[1]=pyjets_.p[0][iPrt];
       iparticle[2]=pyjets_.p[1][iPrt];
       iparticle[3]=pyjets_.p[2][iPrt];
       iparticle[4]=pyjets_.p[3][iPrt];
       if (iparticle.theta() < 4.4*M_PI/180) continue;
-      if (iparticle.theta() > 15.0*M_PI/180) continue;
+      if (iparticle.theta() > 174.0*M_PI/180) continue;
       iparticle.rotbst(hcms);
       hst.fill(iparticle.eta(), iparticle.eT());
     } ++iAccept; 
