@@ -1,1 +1,8 @@
-theme: jekyll-theme-time-machine
+title: Sixtrack-GSoC 2016 Submission
+description: 
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-architect
+
+gems:
+  - jekyll-mentions
