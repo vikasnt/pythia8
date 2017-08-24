@@ -1,4 +1,4 @@
-###Project Description-
+Project Description-
 My GSoC organization is Massachusetts Institute of Technology (MIT) under the umbrella of HEP Software Foundation (HSF) and the project I worked on is Pythia8.
 PYTHIA8 is used for generation of events in high-energy collisions, using a coherent set of physics models for the evolution from a few-body hard process to a complex multiparticle final state. It is the C++ successor of Pythia6 which was written entirely in Fortran.
 Pythia8 still lacks certain important functionalities before it can completely replace Pythia6. This project is also part of the same effort.
