@@ -1,30 +1,49 @@
-###Project Description-
-My GSoC organization was CERN SFT and the project I chose was Sixtrack.
-Sixtrack is a software package written in Fortran to compute the trajectory of elementary particles in 6-D phase space as they pass through circular accelerators (like LHC) and achieve high energies in a controlled manner via combination of Electric and Magnetic fields. Currently, the two most pressing issues in Sixtrack which require developments are:
- 1) As the energy range and intensity at which future accelerator will work is reaching unprecedented values, Sixtrack also needs to consider effects of some elements involved which were either negligible or were using simple approximation earlier.
- 2) Updating the code to lift limits related to what Sixtrack can currently do.
+Project Description-
+My GSoC organization is Massachusetts Institute of Technology (MIT) under the umbrella of HEP Software Foundation (HSF) and the project I worked on is Pythia8.
+PYTHIA8 is used for generation of events in high-energy collisions, using a coherent set of physics models for the evolution from a few-body hard process to a complex multiparticle final state. It is the C++ successor of Pythia6 which was written entirely in Fortran.
+Pythia8 still lacks certain important functionalities before it can completely replace Pythia6. This project is also part of the same effort.
 
-### Project Goals
-After discussion with mentors in the Community Bonding Period, We decided on the following goals for the GSoC timeline-
+### Work done
+In chronological order, the work I did can be briefly summarised as-
 
-1. Makefile - Issue tracker - https://github.com/SixTrack/SixTrack/issues/37. Sixtrack originally used a script to build executable from source code which still works fine. A makefile was also created but due to a few bugs, the makefile was not working as it should.The new build system will replace the old and arcane dependency resolution system (the script) with something more general and maintainable. This makes it easier to support multiple platforms, and also to incorporate external libraries in a clean way. We agreed that cleaning makefile, as well as getting it working for multiple platforms should be done first. After debugging the code, we finally managed to get it working correctly. Also, we added support for 64-bit executable while earlier only 32-bit executable was possible (which was also one of the limitations of Sixtrack).
-Pull request - https://github.com/SixTrack/SixTrack/pull/73 , https://github.com/SixTrack/SixTrack/pull/76 and also https://github.com/SixTrack/SixTrack/commit/03e69ac75bd52e9f7123f1aca7cda8d542078169
+1. Building a Pythia6 plugin for Pythia8 : This will enable us to easily compare results between Pythia8 and Pythia6 for the process we will add ( as well as comparing existing process ) . This requires calling Pythia6 routine for hard process generation, then passing the hard process result via Les Houches Accord (LHA), and doing the later parts of event generation in Pythia8. We added the new code in include/Pythia8Plugins/LHAPythia6.h and this can be run using examples/main36.cc which also contains analysis code for HERA specefic comparisions. While this works as intended for 2-2 process ( which constitutes majority of Pythia8 use), the plugin isn't able to work well with 2-1 process ( only one 2-1 case checked as of now, process number 99). This is becuase of the way Pythi6 is passing the hard process data for this process and correcting this will require further work in future.
+Things I learned while doing this- Cross language programming and basic details of running Pythia6 and Pythia8 event generation from both techincal and physics point of view. 
 
-2. File system- Issue tracker - https://github.com/SixTrack/SixTrack/issues/77. The Output from Sixtrack is used in a few other packages, and adhering to a standard output format is necessary, which is also explained in Sixtrack Manual. Sixtrack output is saved in binary files(to save size) and currently the code only writes maximum 32 files,each storing data from 2 particles at max. Again, as the physical limit of particle accelerators is pushing its limits to explore previously unimaginable flux and energy ranges, Sixtrack also needs to work with more particles in order to remain as useful to the scientific community in future as it is today. Since the old format is at its limit, after discussion we decided to add another feature to Sixtrack where we will work with a single binary file which can store as many particle data as needed. This is only half part of the puzzle (and the easier half if I have to guess) since upgrading a lot of variables etc is also required to accommodate the new particle limit which will mean updating a large portion of a very big code base and possibly lots of debugging.
-Also, effort is required to validate the new system which means writing a few tests script as well as editing older ones to accommodate the changes. This goal is also complete in terms of the working code, although some more testing is required before merging with master branch can be done.
-Pull Request - https://github.com/SixTrack/SixTrack/pull/82
+2. Updating lepton-hadron collision process : There are two ways of running lepton-hadron collision in Pythia6. First is a straightforward 2-2 process which already exist in Pythi8. We also used our plugin to compare the 2-2 process results from Pythia8 and Pythia6 with the experimental data from HERA and found all three to be in agreement as expected. In Pythia6, another way to do this is via gamma/lepton machinery which considers photon inside lepton beam and breaks it into many subprocess (2-2 as well as 2-1 process) involving photon inside lepton beam interacts with the quark(inside hadron). Understanding the physics behind this breakdown as well as existing implementation in Pythia6 was followed by adding new process in Pythia8 called DIS:gammaf2f. A few other process needs to be added but they are extensions of already exsiting QCD process in PYthia8 with relevant changes to accomodate lepton-hadron event features.DIS:gammaf2f took quite sometime to completely debug because a) Implementation of physics in Pythia..., b) this particular process is different from typical Pythia8 process so we got errors difficult to debug. One important part of this gamma/lepton machinery is special treatment of gamma kinematics. What exist in Pythia8 is only for gamma-pair and also lacks flux contribution from VMD part fo lepton. Updating it completely requires effort in almost all important files in Pythia8, although we have already made progress in understanding what needs to be done and adding the VMD contribution is. But this wasn't possible to be done in GSoC timeline, considering it took a lot of time to implement DIS process itself.(still editing)
+Things I learned while doing this- A lot of beyond undergard level physics regarding 
 
-3. Solenoid implementation - Issue - https://github.com/SixTrack/SixTrack/issues/4. Sixtrack already has the thin lens approximation for Solenoid element but a possible bug was found in it. We decided to finish this assuming it was a simple bug and shouldn't take much time but after carefully examining the code and Physics involved, some complications were found. After some brainstorming, we are pretty close to debugging the code. Some irregularities in the Sixtrack manual vs Physics of Solenoid in accelerator vs code implementation have been found, and only a few things are left to be cleared up(possibly in a week worth of time). 
+3. Comparing results with experimental data : In order to compare result between experiment and existing gamma/lepton machinery based Pythia6 run ( as well as the above mentioned 2-2 process based run), we had to also write an example for running a full Pythia6 event because of the issue of 2-1 process not running correctly with the plugin. Thus, I wrote another example code which calls all relevant methods and variables from Pythia6 but uses C++ to analyse event. Histogram for all relevant subprocess as well as total process were compared and can be found in gsoc_result.pdf(yet to add).
 
-4. RF implementation - Issue - https://github.com/SixTrack/SixTrack/issues/5. This was the last goal which we were supposed to finish, but due to 3rd problem blowing up in the time taken, as well as some extra time wasted in completing older stuff, I only arrived at this around the last 10 days of GSoC. We have decided to pick it up after finishing the 3rd goal and I intend to work on this after GSoC deadline ends.
+### List of files edited/added while working on this project.
+Examples:
+examples/main35.cc
+examples/main36.cc
+examples/mymain01.cc
+
+Plugin file:
+include/Pythia8Plugins/LHAPythia6.h
+
+Xml file:
+share/Pythia8/xmldoc/DISProcesses.xml
+share/Pythia8/xmldoc/ProgramFiles.xml
+share/Pythia8/xmldoc/Index.xml
+
+Source file:
+src/BeamRemnants.cc
+src/ProcessContainer.cc
+src/SigmaDIS.cc
+include/Pythia8/BeamRemnants.h
+include/Pythia8/SigmaDIS.h
 
 
+### Conclusion
+A major part of this project involved understanding both physics behind the event generation, and implementation of physics in Pythia8 as well as Pythia6 of event generation in High Energy Physics. Still a few thing remains to be done but with the understanding acquired of technical and physical aspects of Pythia8 over this program, I will finish the things we had in mind at the start of this project as well as intend to join as regular contributor to Pythia8.
+
+create 
 ### Authors and Contributors
 GSoC participant - Vikas Gupta <@vikasnt> 
 
-Mentors - Kyrre Ness Sjøbæk <@kyrsjo> and Riccardo De Maria <@rdemaria>
+Mentors - Philip Ilten and Mike Williams.
 
-I would like to thank Google as well as CERN SFT and my mentors for this wonderful opportunity.
-
-Finally, I would like to thank Kyrre Ness Sjøbæk @kyrsjo for guiding as well as helping out so many times while working on Sixtrack.
+I would like to thank Google as well as HSF and my mentors for this wonderful opportunity.
 
