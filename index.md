@@ -14,6 +14,7 @@ In chronological order, the work I did can be briefly summarised as-
 
 ### List of files edited/added while working on this project.
 Examples:
+
 examples/main35.cc  - example to run only Pythia6 event with HERA specefic event analysis.
 
 examples/main36.cc  - example to run Pythia6 plugin with HERA sepecfic event analysis.
@@ -21,9 +22,11 @@ examples/main36.cc  - example to run Pythia6 plugin with HERA sepecfic event ana
 examples/mymain01.cc  - trivial example to only do Pythia8 run.
 
 Plugin file:
+
 include/Pythia8Plugins/LHAPythia6.h  - Plugin to run Pythia6 hard process with Pythia8 run. 
 
 Xml file:
+
 share/Pythia8/xmldoc/DISProcesses.xml - XML file for added DIS process.
 
 share/Pythia8/xmldoc/ProgramFiles.xml - adding DIS to process list.
@@ -31,6 +34,7 @@ share/Pythia8/xmldoc/ProgramFiles.xml - adding DIS to process list.
 share/Pythia8/xmldoc/Index.xml - adding DIS to index list.
 
 Source file:
+
 src/BeamRemnants.cc - Editing Beamremnant to add outgoing electron for DIS specefic.
 
 src/ProcessContainer.cc - Adding DIS to process known to Pythia8.
